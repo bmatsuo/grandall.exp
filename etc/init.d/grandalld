@@ -12,7 +12,10 @@
 
 . /lib/lsb/init-functions
 
-DAEMON_OPTS="-config /var/lib/grandall/grandalld.conf -sites /var/lib/grandall/sites-enabled"
+GRANDALLD_CONFIG=/var/lib/grandall/grandalld.conf
+GRANDALLD_SITES=/var/lib/grandall/sites-enabled
+
+DAEMON_OPTS="-config $GRANDALLD_CONFIG -sites $GRANDALLD_SITES"
 DAEMON=/usr/local/bin/grandalld
 NAME=grandalld
 DESC=grandalld

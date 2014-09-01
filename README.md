@@ -7,7 +7,7 @@ Grandall is a self-managed url shortener inspired by Justin Abrahms'
 
 Bind a short URL to a frequented website.
 
-    $ cat > ~/.config/grandall/sites
+    $ cat > ~/.config/grandall/sites/go-playground
     bind = "/goplay"
     url = "http://play.golang.org/"
     ^D
@@ -35,3 +35,12 @@ Then start grandalld.
         -config ~/.config/grandall/grandalld.conf \
         -sites ~/.config/grandall/sites
 ```
+
+##Integration examples
+
+The `examples/` directory contains examples for integrating grandalld and
+ensuring it is always running.
+
+- [lsb-init](https://github.com/bmatsuo/grandall.exp/tree/master/examples/lsb-init)
+  contains an [LSB init script](https://wiki.debian.org/LSBInitScripts) for
+  grandalld.

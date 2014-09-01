@@ -1,0 +1,4 @@
+This directory contains site definitions.  Symbolic links will be followed but
+directories will not be searched recursively.
+
+This file and any file with a name beginning with '.' are ignored.

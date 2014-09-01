@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bbangert/toml"
+	"github.com/BurntSushi/toml"
 	"github.com/gorilla/mux"
 )
 

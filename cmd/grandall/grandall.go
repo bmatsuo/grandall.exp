@@ -42,7 +42,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bbangert/toml"
+	"github.com/BurntSushi/toml"
 )
 
 // DefaultConfigPath is a static path that is checked for a global

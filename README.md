@@ -1,6 +1,6 @@
 ##grandall
 
-Grandall is a self-managed url shortener inspired by Justin Abrahms'
+Grandall is a url aliasing system inspired by Justin Abrahms'
 [randall](https://github.com/justinabrahms/randall).
 
 ##Usage
@@ -8,25 +8,31 @@ Grandall is a self-managed url shortener inspired by Justin Abrahms'
 Bind a short URL to a frequented website.
 
     $ cat > ~/.config/grandall/sites/go-playground
-    bind = "/goplay"
+    bind = "/play"
     url = "http://play.golang.org/"
     ^D
-    $
+    $ sudo service grandalld restart
 
-After grandalld is restarted visiting the bound URL will redirect to the
+After grandalld is restarted visiting the aliased location will redirect to the
 destination URL.
 
-    open http://<grandalld-host-addr>/goplay
+    http://<grandalld-host-addr>/play
 
-##Setup
+On the command line the
+[grandall](http://godoc.org/github.com/bmatsuo/grandall.exp/cmd/grandall)
+utility may also be used to open aliased locations.
+
+    $ grandall play
+
+##"Manual" Setup
 
 Install the grandalld binary.
 
-    go get github.com/bmatsuo/grandall/cmd/grandalld
+    go get -u github.com/bmatsuo/grandall/cmd/grandalld
 
-Create a configuration file somewhere, say `~/.config/grandall/grandalld.conf`.
+Create a configuration file somewhere like `~/.config/grandall/grandalld.conf`.
 
-Create a sites directory somewhere, say `~/.config/grandall/sites`.
+Create a sites directory somewhere like `~/.config/grandall/sites`.
 
 Then start grandalld.
 
@@ -44,3 +50,5 @@ ensuring it is always running.
 - [lsb-init](https://github.com/bmatsuo/grandall.exp/tree/master/examples/lsb-init)
   contains an [LSB init script](https://wiki.debian.org/LSBInitScripts) for
   grandalld.
+
+- OS X? I don't like launchd...

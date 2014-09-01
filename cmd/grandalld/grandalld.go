@@ -31,6 +31,7 @@ func main() {
 
 	router := mux.NewRouter()
 	for _, site := range sites {
+		site := site
 		_, err := url.Parse(site.URL)
 		if err != nil {
 			log.Fatalf("%q %v", site.URL, err)

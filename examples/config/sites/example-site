@@ -1,7 +1,7 @@
 # this is an example configuration file in the TOML format.
 
 # bind is the address grandalld assigns to the destination url.
-bind = "/goplay"
+bind = "/play"
 
 # url is the destination site url.
 url = "http://play.golang.org"

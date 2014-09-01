@@ -51,11 +51,13 @@ func main() {
 			r.Path(bindurl.Path)
 		}
 		r.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r.Body.Close()
 			log.Printf("ACCESS %s %v", site.Name, site.URL)
 			http.Redirect(w, r, site.URL, http.StatusTemporaryRedirect)
 		})
 	}
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Body.Close()
 		log.Printf("NOTFOUND %v", r.URL.Path)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	})

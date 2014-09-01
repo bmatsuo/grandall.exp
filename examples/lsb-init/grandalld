@@ -29,7 +29,7 @@ start_grandalld() {
 stop_grandalld() {
 	start-stop-daemon --stop --quiet \
 		--pidfile /var/run/$NAME.pid \
-		--exec $DAEMON || true
+		--exec $DAEMON -- $DAEMON_OPTS || true
 }
 
 case "$1" in

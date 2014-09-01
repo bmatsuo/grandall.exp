@@ -10,9 +10,9 @@ import (
 
 func OpenURL(url string) error {
 	log.Printf("open %q", url)
-	p, err := exec.Command("open", url).CombinedOutput()
+	err := exec.Command("open", url).Run()
 	if err != nil {
-		return fmt.Errorf("%q (%v)", p, err)
+		return fmt.Errorf("open (%v)", err)
 	}
 	return nil
 }

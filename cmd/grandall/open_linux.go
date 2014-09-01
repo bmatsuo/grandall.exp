@@ -9,9 +9,9 @@ import (
 
 // BUG: OpenURL on linux only knows how to use xdg-open.
 func OpenURL(url string) error {
-	p, err := exec.Command("xdg-open", url).CombinedOutput()
+	err := exec.Command("xdg-open", url).Run()
 	if err != nil {
-		return fmt.Errorf("%q (%v)", p, err)
+		return fmt.Errorf("xdg-open (%v)", err)
 	}
 	return nil
 }

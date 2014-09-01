@@ -1,3 +1,37 @@
+/*
+Command grandall is a client for grandalld.
+
+Usage
+
+The most common usage of grandall is to open a page in a web browser.  For
+example if grandalld binds "/play" to "http://play.golang.org" the destination
+can be opened with a grandall command.
+
+	grandall play
+
+If grandalld binds "/godoc" to "http://godoc.org" then both destinations can be
+openend with one command.
+
+	grandall play godoc
+
+Configuration
+
+Grandall looks for a TOML
+configuration file pointing to grandalld.
+
+	url = "http://localhost:7575/"
+
+The default location of the configuration file is derived from the
+environment, but a system wide fallback is used if no user/environment
+specific configuration is found.
+Grandall checks the following paths for configuration:
+
+	$HOME/.config/grandall/grandall.conf
+	/etc/grandall/grandall.conf
+
+If no configuration file exists at one of the above locations then grandall
+must be invoked with the "-config" flag.
+*/
 package main
 
 import (

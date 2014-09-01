@@ -6,8 +6,10 @@
 # Required-Stop:     $local_fs $remote_fs $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: controls the grandalld url shortener
-# Description:       daemonized grandalld using start-stop-daemon from lib/lsd/init-functions.
+# Short-Description: controls the grandalld url alias daemon
+# Description:
+#   Daemonize grandalld using start-stop-daemon from lib/lsd/init-functions.
+#   Configuration and sites are stored 'globally' in /var/lib/grandall.
 ### END INIT INFO
 
 . /lib/lsb/init-functions
@@ -45,19 +47,11 @@ case "$1" in
 		echo "$NAME."
 		;;
 
-	restart|force-reload)
+	restart|force-reload|reload)
 		echo -n "Restarting $DESC: "
 		stop_grandalld
 		sleep 1
 		start_grandalld
-		echo "$NAME."
-		;;
-
-	reload)
-		echo -n "Reloading $DESC configuration: "
-		start-stop-daemon --stop --signal HUP --quiet \
-			--pidfile /var/run/$NAME.pid \
-			--exec $DAEMON || true
 		echo "$NAME."
 		;;
 

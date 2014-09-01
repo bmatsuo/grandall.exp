@@ -13,7 +13,8 @@ Bind a short URL to a frequented website.
     ^D
     $
 
-After grandalld is restarted visiting the bound URL will redirect to URL.
+After grandalld is restarted visiting the bound URL will redirect to the
+destination URL.
 
     open http://<grandalld-host-addr>/goplay
 

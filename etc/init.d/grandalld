@@ -1,0 +1,70 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          grandalld
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: controls the grandalld url shortener
+# Description:       daemonized grandalld using start-stop-daemon from lib/lsd/init-functions.
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+DAEMON_OPTS="-config /var/lib/grandall/grandalld.conf -sites /var/lib/grandall/sites-enabled"
+DAEMON=/usr/local/bin/grandalld
+NAME=grandalld
+DESC=grandalld
+
+start_grandalld() {
+	start-stop-daemon --start --quiet --background \
+		--pidfile /var/run/$NAME.pid --make-pidfile \
+		--exec $DAEMON -- $DAEMON_OPTS || true
+}
+
+stop_grandalld() {
+	start-stop-daemon --stop --quiet \
+		--pidfile /var/run/$NAME.pid \
+		--exec $DAEMON || true
+}
+
+case "$1" in
+	start)
+		echo -n "Starting $DESC: "
+		start_grandalld
+		echo "$NAME."
+		;;
+
+	stop)
+		echo -n "Stopping $DESC: "
+		stop_grandalld
+		echo "$NAME."
+		;;
+
+	restart|force-reload)
+		echo -n "Restarting $DESC: "
+		stop_grandalld
+		sleep 1
+		start_grandalld
+		echo "$NAME."
+		;;
+
+	reload)
+		echo -n "Reloading $DESC configuration: "
+		start-stop-daemon --stop --signal HUP --quiet \
+			--pidfile /var/run/$NAME.pid \
+			--exec $DAEMON || true
+		echo "$NAME."
+		;;
+
+	status)
+		status_of_proc -p /var/run/$NAME.pid "$DAEMON" "$NAME" && exit 0 || exit $?
+		;;
+	*)
+		echo "Usage: $NAME {start|stop|restart|reload|force-reload|status}" >&2
+		exit 1
+		;;
+esac
+
+exit 0

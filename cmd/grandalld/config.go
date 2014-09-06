@@ -59,6 +59,12 @@ func readSite(filename string) (*Site, error) {
 
 type Config struct {
 	Bind string `toml:"bind"`
+
+	// Metrics specifies the type of metrics to use (e.g. "influxdb", "log",
+	// etc), the default value is "log".
+	Metrics string `toml:"metrics"`
+	// MetricsHost is ignored for "log" metrics.
+	MetricsHost string `toml:"metrics_host"`
 }
 
 type Site struct {

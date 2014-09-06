@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RedirectHandler(sites []*Site) (http.Handler, error) {
+func RedirectHandler(sites []*Site, access func(name, bind, url string)) (http.Handler, error) {
 	index, err := Index(sites)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,9 @@ func RedirectHandler(sites []*Site) (http.Handler, error) {
 		}
 		r.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			r.Body.Close()
-			log.Printf("ACCESS %s %v", site.Name, site.URL)
+			if access != nil {
+				access(site.Name, site.Bind, site.URL)
+			}
 			http.Redirect(w, r, site.URL, http.StatusTemporaryRedirect)
 		})
 	}

@@ -23,7 +23,8 @@ func main() {
 
 	s := new(http.Server)
 	s.Addr = conf.Bind
-	s.Handler, err = RedirectHandler(sites)
+	access := func(name, bind, url string) { log.Printf("ACCESS %s %v", name, url) }
+	s.Handler, err = RedirectHandler(sites, access)
 	if err != nil {
 		log.Fatal(err)
 	}

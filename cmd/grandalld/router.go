@@ -9,8 +9,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RedirectHandler(sites []*Site) (http.Handler, error) {
-	index, err := Index(sites)
+func RedirectHandler(sites []*Site, css []string) (http.Handler, error) {
+	index, err := Index(sites, css)
 	if err != nil {
 		return nil, err
 	}

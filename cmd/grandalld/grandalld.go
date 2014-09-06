@@ -20,13 +20,28 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	s := new(http.Server)
-	s.Addr = conf.Bind
-	s.Handler, err = RedirectHandler(sites)
-	if err != nil {
-		log.Fatal(err)
+	service := &Service{
+		sites: sites,
 	}
 
+	redirector, err := RedirectHandler(service)
+	if err != nil {
+		log.Panic(err)
+	}
+	mux := http.NewServeMux()
+	mux.Handle("/.api/", http.StripPrefix("/.api/", APIHandler(service)))
+	mux.Handle("/", redirector)
+	s := new(http.Server)
+	s.Addr = conf.Bind
+	s.Handler = mux
+
 	log.Panic(s.ListenAndServe())
+}
+
+type Service struct {
+	sites []*Site
+}
+
+func (s *Service) Sites() []*Site {
+	return append([]*Site(nil), s.sites...)
 }

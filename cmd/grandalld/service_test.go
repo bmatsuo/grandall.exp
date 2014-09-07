@@ -224,12 +224,7 @@ func newSimpleServiceTest(t *testing.T) (*Service, *httptest.Server) {
 	if err != nil {
 		t.Fatalf("new: %v", err)
 	}
-	handler, err := s.Handler()
-	if err != nil {
-		t.Fatalf("handler: %v", err)
-	}
-	server := httptest.NewServer(handler)
-	return s, server
+	return s, httptest.NewServer(s.Handler())
 }
 
 func isredirect(err error) bool {

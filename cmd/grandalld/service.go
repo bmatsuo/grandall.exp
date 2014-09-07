@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -10,8 +9,10 @@ import (
 )
 
 type Service struct {
-	sites []*Site
-	index http.Handler
+	Access   func(name, bind, url string)
+	NotFound func(w http.ResponseWriter, r *http.Request)
+	sites    []*Site
+	index    http.Handler
 }
 
 func NewService(sites []*Site) (*Service, error) {
@@ -55,7 +56,7 @@ func (s *Service) Sites() []*Site {
 	return append([]*Site(nil), s.sites...)
 }
 
-func (s *Service) Handler() (http.Handler, error) {
+func (s *Service) Handler() http.Handler {
 	root := http.NewServeMux()
 	root.Handle("/.api/", http.StripPrefix("/.api", APIHandler(s)))
 	root.Handle("/static/", s.index)
@@ -65,7 +66,7 @@ func (s *Service) Handler() (http.Handler, error) {
 	root.Handle("/", rt)
 
 	rt.NotFoundHandler = http.HandlerFunc(s.notFound)
-	return root, nil
+	return root
 }
 
 func (service *Service) bindRedirects(rt *mux.Router) {
@@ -87,14 +88,18 @@ func (service *Service) bindRedirects(rt *mux.Router) {
 		}
 		r.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			r.Body.Close()
-			log.Printf("ACCESS %s %v", site.Name, site.URL)
+			if service.Access != nil {
+				service.Access(site.Name, site.Bind, site.URL)
+			}
 			http.Redirect(w, r, site.URL, http.StatusTemporaryRedirect)
 		})
 	}
 }
 
 func (service *Service) notFound(w http.ResponseWriter, r *http.Request) {
-	r.Body.Close()
-	log.Printf("NOTFOUND %v", r.URL.Path)
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	if service.NotFound != nil {
+		service.NotFound(w, r)
+		return
+	}
+	http.NotFound(w, r)
 }

@@ -25,13 +25,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	serviceHandler, err := service.Handler()
-	if err != nil {
-		log.Fatal(err)
+	service.Access = func(name, bind, url string) {
+		log.Printf("ACCESS %s %v", name, url)
+	}
+	service.NotFound = func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("NOTFOUND %v", r.URL.Path)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 
 	s := new(http.Server)
 	s.Addr = conf.Bind
-	s.Handler = serviceHandler
+	s.Handler = service.Handler()
 	log.Panic(s.ListenAndServe())
 }

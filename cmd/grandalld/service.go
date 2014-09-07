@@ -19,29 +19,28 @@ func NewService(sites []*Site) (*Service, error) {
 	binds := make(map[string]bool)
 
 	for _, site := range sites {
-		if names[site.Name] {
-			return nil, fmt.Errorf("duplicate name %q", site.Name)
-		}
-		names[site.Name] = true
-
-		if binds[site.Bind] {
-			return nil, fmt.Errorf("duplicate bind %q", site.Bind)
-		}
-		binds[site.Bind] = true
-
 		// validate destination and bind urls
 		u, err := url.Parse(site.URL)
 		if err != nil {
-			return nil, fmt.Errorf("%q %v", site.URL, err)
+			return nil, fmt.Errorf("%q: %v", site.URL, err)
 		}
 		if u.Scheme == "" {
 			return nil, fmt.Errorf("relative url")
 		}
-
 		u, err = BindURL(site)
 		if err != nil {
-			return nil, fmt.Errorf("%q %v", site.Name, err)
+			return nil, fmt.Errorf("%q: %v", site.Name, err)
 		}
+
+		if names[site.Name] {
+			return nil, fmt.Errorf("%q: duplicate name", site.Name)
+		}
+		names[site.Name] = true
+
+		if binds[site.Bind] {
+			return nil, fmt.Errorf("%q: duplicate bind %q", site.Name, site.Bind)
+		}
+		binds[site.Bind] = true
 	}
 
 	s := &Service{sites: sites}

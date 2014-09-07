@@ -1,4 +1,4 @@
-##grandall
+##grandall [![Build Status](https://travis-ci.org/bmatsuo/grandall.exp.svg?branch=master)](https://travis-ci.org/bmatsuo/grandall.exp)
 
 Grandall is a url aliasing system inspired by Justin Abrahms'
 [randall](https://github.com/justinabrahms/randall).

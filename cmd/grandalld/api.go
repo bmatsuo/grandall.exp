@@ -22,14 +22,8 @@ func APIHandler(service *Service) http.Handler {
 	api.service = service
 	api.mux = http.NewServeMux()
 	api.mux.Handle("/v1/", http.StripPrefix("/v1", APIHandlerV1(api.service)))
-	api.mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(404)
-		fmt.Fprintf(w, "fuck")
-	})
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("api %v", r.URL.Path)
-		api.ServeHTTP(w, r)
-	})
+	api.mux.HandleFunc("/", http.NotFound)
+	return api
 }
 
 type APIV1 struct {

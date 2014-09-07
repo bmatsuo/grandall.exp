@@ -10,6 +10,7 @@ Bind a short URL to a frequented website.
     $ cat > ~/.config/grandall/sites/go-playground
     bind = "/play"
     url = "http://play.golang.org/"
+    description = "go playground"
     ^D
     $ sudo service grandalld restart
 
@@ -24,23 +25,27 @@ utility may also be used to open aliased locations.
 
     $ grandall play
 
-##"Manual" Setup
+##Service setup
 
-Install the grandalld binary.
+Download a [release
+archive](http://github.com/bmatsuo/grandall.exp/releases/latest) or use `go
+get` to install grandalld.
 
-    go get -u github.com/bmatsuo/grandall/cmd/grandalld
+    go get github.com/bmatsuo/grandall.exp/cmd/grandalld
 
-Create a configuration file somewhere like `~/.config/grandall/grandalld.conf`.
+See the grandalld
+[documentation](http://godoc.org/github.com/bmatsuo/grandall.exp/cmd/grandalld)
+for help configuring the service.
 
-Create a sites directory somewhere like `~/.config/grandall/sites`.
+##Command line client
 
-Then start grandalld.
+The `grandall` command line interface is an optional component that launches
+aliases from the command line.  For more information see the grandall
+[documentation](http://godoc.org/github.com/bmatsuo/grandall.exp/cmp/grandall).
+The command line interface can be installed from a [release
+archive](http://github.com/bmatsuo/grandall.exp/releases/latest) with `go get`.
 
-```sh
-    grandalld \
-        -config ~/.config/grandall/grandalld.conf \
-        -sites ~/.config/grandall/sites
-```
+    go get github.com/bmatsuo/grandall.exp/cmd/grandall
 
 ##Integration examples
 
@@ -80,7 +85,7 @@ Making an API work in a distributed enviroment is not trivial.  Distributing
 change is orthogonal to allowing change and an API does aid in change
 distribution.
 
-###confd
+###Confd
 
 The idea of using confd intrigues me.  Grandalld would be agnostic to confd's
 presence, keeping things simple and allowing it to keep it's file-based config

@@ -49,8 +49,8 @@ func NewService(sites []*Site) (*Service, error) {
 
 	s := &Service{
 		sites: sites,
-		index: UI(sites),
 	}
+	s.index = UI(sites, s.notFound)
 
 	return s, nil
 }
@@ -63,11 +63,14 @@ func (s *Service) Sites() []*Site {
 // returned handler provides alias endpoints redirecting to destination URLs,
 // an API, and a static user interface at "/".
 func (s *Service) Handler() http.Handler {
+	// set s.index as the NotFoundHandler of the redirect mux in order to route
+	// the root path "/" to the web-ui index.
+	redir := s.redirectHandler()
+	redir.NotFoundHandler = s.index
+
 	root := http.NewServeMux()
 	root.Handle("/.api/", http.StripPrefix("/.api", APIHandler(s)))
-	root.Handle("/static/", s.index)
-	redir := s.redirectHandler()
-	redir.NotFoundHandler = http.HandlerFunc(s.notFound)
+	root.Handle("/.static/", s.index)
 	root.Handle("/", redir)
 	return root
 }

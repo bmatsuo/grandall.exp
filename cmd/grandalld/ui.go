@@ -24,7 +24,7 @@ var indexRaw = []byte(`
 			</li>
 		</ul>
 	</div>
-	<script src="/static/app.js"></script>
+	<script src="/.static/app.js"></script>
 </body>
 </html>
 `)
@@ -40,10 +40,21 @@ grandallApp.controller('AliasListCtrl', ['$scope', '$http', function($scope, $ht
 }]);
 `)
 
-func UI(s []*Site) http.Handler {
+func UI(s []*Site, notfound http.HandlerFunc) http.Handler {
+	index := staticHandler("text/html", indexRaw)
 	mux := http.NewServeMux()
-	mux.Handle("/static/app.js", staticHandler("text/javascript", appJSRaw))
-	mux.Handle("/", staticHandler("text/html", indexRaw))
+	mux.Handle("/.static/app.js", staticHandler("text/javascript", appJSRaw))
+	mux.Handle("/.static/index.html", index)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		h := notfound
+		if r.URL.Path == "/" {
+			h = index.ServeHTTP
+		}
+		if h == nil {
+			h = http.NotFound
+		}
+		h(w, r)
+	})
 	return mux
 }
 

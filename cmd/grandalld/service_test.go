@@ -82,7 +82,7 @@ func TestNewService(t *testing.T) {
 	}
 }
 
-func TestServiceServeHTTP(t *testing.T) {
+func TestServiceServeHTTP_redirect(t *testing.T) {
 	_, server := newSimpleServiceTest(t)
 	c := newServiceClient()
 	defer server.Close()

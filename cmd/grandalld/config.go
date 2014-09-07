@@ -62,16 +62,22 @@ type Config struct {
 }
 
 type Site struct {
-	Name        string `toml:"-"`
-	Bind        string `toml:"bind"`
-	URL         string `toml:"url"`
-	Description string `toml:"description"`
+	Name        string `toml:"-" json:"name"`
+	Bind        string `toml:"bind" json:"bind"`
+	URL         string `toml:"url" json:"url"`
+	Description string `toml:"description" json:"description"`
 }
 
 func BindURL(s *Site) (*url.URL, error) {
 	u, err := url.Parse(s.Bind)
 	if err != nil {
 		return nil, err
+	}
+	if !strings.HasPrefix(u.Path, "/") {
+		return nil, fmt.Errorf("relative bind")
+	}
+	if strings.HasSuffix(u.Path, "/") {
+		return nil, fmt.Errorf("rooted bind")
 	}
 	return u, nil
 }

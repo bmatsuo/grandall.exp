@@ -21,12 +21,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	s := new(http.Server)
-	s.Addr = conf.Bind
-	s.Handler, err = RedirectHandler(sites)
+	service, err := NewService(sites)
+	if err != nil {
+		log.Fatal(err)
+	}
+	serviceHandler, err := service.Handler()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	s := new(http.Server)
+	s.Addr = conf.Bind
+	s.Handler = serviceHandler
 	log.Panic(s.ListenAndServe())
 }

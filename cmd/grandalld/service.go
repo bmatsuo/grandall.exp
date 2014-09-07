@@ -58,11 +58,12 @@ func (s *Service) Sites() []*Site {
 func (s *Service) Handler() (http.Handler, error) {
 	root := http.NewServeMux()
 	root.Handle("/.api/", http.StripPrefix("/.api", APIHandler(s)))
+	root.Handle("/static/", s.index)
 
 	rt := mux.NewRouter()
-	root.Handle("/", rt)
 	s.bindRedirects(rt)
-	rt.Handle("/{tail:.*}", s.index)
+	root.Handle("/", rt)
+
 	rt.NotFoundHandler = http.HandlerFunc(s.notFound)
 	return root, nil
 }

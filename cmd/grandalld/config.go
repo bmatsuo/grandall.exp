@@ -73,5 +73,11 @@ func BindURL(s *Site) (*url.URL, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !strings.HasPrefix(u.Path, "/") {
+		return nil, fmt.Errorf("relative bind")
+	}
+	if strings.HasSuffix(u.Path, "/") {
+		return nil, fmt.Errorf("rooted bind")
+	}
 	return u, nil
 }

@@ -48,7 +48,10 @@ The `examples/` directory contains examples for integrating grandalld and
 ensuring it is always running.
 
 - [lsb-init](https://github.com/bmatsuo/grandall.exp/tree/master/examples/lsb-init)
-  contains an [LSB init script](https://wiki.debian.org/LSBInitScripts) for
+  provides an [LSB init script](https://wiki.debian.org/LSBInitScripts) for
   grandalld.
+
+- [dockerfile](https://github.com/bmatsuo/grandall.exp/tree/master/examples/dockerfile)
+  provides a simple Dockerfile configuration for grandalld.
 
 - OS X? I don't like launchd...

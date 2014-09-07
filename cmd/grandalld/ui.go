@@ -19,7 +19,7 @@ var indexRaw = []byte(`
 		<h1 class="row">Aliases</h1>
 		<ul class="list-unstyled row">
 			<li ng-repeat="alias in aliases">
-			<a href={{alias.url}}><strong>{{alias.name}}</string></a>
+			<a href={{alias.bind}}><strong>{{alias.name}}</string></a>
 			<span>{{alias.description}}</span>
 			</li>
 		</ul>

@@ -8,6 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Service exposes the HTTP redirection service and an API for managing the
+// service and creating user interfaces.
 type Service struct {
 	Access   func(name, bind, url string)
 	NotFound func(w http.ResponseWriter, r *http.Request)
@@ -15,6 +17,7 @@ type Service struct {
 	index    http.Handler
 }
 
+// NewService validates sites and allocates a new Service aliasing them.
 func NewService(sites []*Site) (*Service, error) {
 	names := make(map[string]bool)
 	binds := make(map[string]bool)
@@ -56,20 +59,21 @@ func (s *Service) Sites() []*Site {
 	return append([]*Site(nil), s.sites...)
 }
 
+// Handler constructs and returns an http.Handler for the service.  The
+// returned handler provides alias endpoints redirecting to destination URLs,
+// an API, and a static user interface at "/".
 func (s *Service) Handler() http.Handler {
 	root := http.NewServeMux()
 	root.Handle("/.api/", http.StripPrefix("/.api", APIHandler(s)))
 	root.Handle("/static/", s.index)
-
-	rt := mux.NewRouter()
-	s.bindRedirects(rt)
-	root.Handle("/", rt)
-
-	rt.NotFoundHandler = http.HandlerFunc(s.notFound)
+	redir := s.redirectHandler()
+	redir.NotFoundHandler = http.HandlerFunc(s.notFound)
+	root.Handle("/", redir)
 	return root
 }
 
-func (service *Service) bindRedirects(rt *mux.Router) {
+func (service *Service) redirectHandler() *mux.Router {
+	rt := mux.NewRouter()
 	for _, site := range service.sites {
 		site := site
 
@@ -94,6 +98,7 @@ func (service *Service) bindRedirects(rt *mux.Router) {
 			http.Redirect(w, r, site.URL, http.StatusTemporaryRedirect)
 		})
 	}
+	return rt
 }
 
 func (service *Service) notFound(w http.ResponseWriter, r *http.Request) {

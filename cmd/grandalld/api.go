@@ -21,8 +21,15 @@ func APIHandler(service *Service) http.Handler {
 	api := new(API)
 	api.service = service
 	api.mux = http.NewServeMux()
-	api.mux.Handle("/v1/", http.StripPrefix("/v1/", APIHandlerV1(api.service)))
-	return api
+	api.mux.Handle("/v1/", http.StripPrefix("/v1", APIHandlerV1(api.service)))
+	api.mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(404)
+		fmt.Fprintf(w, "fuck")
+	})
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("api %v", r.URL.Path)
+		api.ServeHTTP(w, r)
+	})
 }
 
 type APIV1 struct {
@@ -35,9 +42,9 @@ func (api *APIV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func APIHandlerV1(service *Service) http.Handler {
-	v1 := new(API)
+	v1 := new(APIV1)
 	v1.mux = http.NewServeMux()
-	v1.mux.HandleFunc("/sites", func(w http.ResponseWriter, r *http.Request) {
+	v1.mux.HandleFunc("/aliases", func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		switch r.Method {
 		case "GET":

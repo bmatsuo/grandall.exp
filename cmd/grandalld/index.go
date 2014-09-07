@@ -1,80 +1,58 @@
 package main
 
-import (
-	"bytes"
-	"html/template"
-	"net/http"
-	"net/url"
-	"strings"
-)
+import "net/http"
 
-var indexTemplateRaw = `
+var indexRaw = []byte(`
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="grandall">
 <head>
+	<meta charset="utf-8">
+	<title>Grandall</title>
+
+	<!-- Latest Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<!-- Latest Angular -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-rc.0/angular.min.js"></script>
 </head>
-<body>
-	<ul>
-		{{range .}}
-		<li>
-		<a href={{href .}}>{{.Name}}</a>
-		<span>{{.Description}}</span>
-		</li>
-		{{end}}
-	</ul>
+<body ng-controller="AliasListCtrl">
+	<div class="container">
+		<h1 class="row">Aliases</h1>
+		<ul class="list-unstyled row">
+			<li ng-repeat="alias in aliases">
+			<a href={{alias.url}}><strong>{{alias.name}}</string></a>
+			<span>{{alias.description}}</span>
+			</li>
+		</ul>
+	</div>
+	<script src="/static/app.js"></script>
 </body>
 </html>
-`
+`)
 
-type index struct {
-	sites    []*Site
-	template *template.Template
-	p        []byte
+var appJSRaw = []byte(`
+var grandallApp = angular.module('grandall', []);
+
+grandallApp.controller('AliasListCtrl', ['$scope', '$http', function($scope, $http) {
+	$scope.aliases = [];
+	$http.get('/.api/v1/aliases').success(function(data) {
+		$scope.aliases = data;
+	});
+}]);
+`)
+
+func UI(s []*Site) http.Handler {
+	mux := http.NewServeMux()
+	mux.Handle("/static/app.js", staticHandler("text/javascript", appJSRaw))
+	mux.Handle("/", staticHandler("text/html", indexRaw))
+	return mux
 }
 
-func aliasHref(s *Site) (string, error) {
-	u, err := url.Parse(s.Bind)
-	if err != nil {
-		return "", err
-	}
-	if u.Scheme != "" {
-		return s.Bind, nil
-	}
-	if u.Host != "" {
-		return s.Bind, nil
-	}
-	ustr := strings.TrimPrefix(s.Bind, "/")
-	return ustr, nil
-}
-
-func (x *index) compile() ([]byte, error) {
-	var err error
-	x.template, err = template.New("alias-index").
-		Funcs(template.FuncMap{"href": aliasHref}).
-		Parse(indexTemplateRaw)
-	if err != nil {
-		return nil, err
-	}
-	var buf bytes.Buffer
-	x.p = nil
-	err = x.template.Execute(&buf, x.sites)
-	if err != nil {
-		return nil, err
-	}
-	x.p = buf.Bytes()
-	return x.p, nil
-}
-
-func Index(s []*Site) (http.Handler, error) {
-	x := new(index)
-	x.sites = s
-	p, err := x.compile()
-	if err != nil {
-		return nil, err
-	}
-	h := func(w http.ResponseWriter, r *http.Request) {
+func staticHandler(mtype string, p []byte) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.Body.Close()
+		if mtype != "" {
+			w.Header().Set("Content-Type", mtype)
+		}
 		w.Write(p)
-	}
-	return http.HandlerFunc(h), nil
+	})
 }

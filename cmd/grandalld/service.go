@@ -43,12 +43,9 @@ func NewService(sites []*Site) (*Service, error) {
 		binds[site.Bind] = true
 	}
 
-	s := &Service{sites: sites}
-
-	var err error
-	s.index, err = Index(sites)
-	if err != nil {
-		return nil, err
+	s := &Service{
+		sites: sites,
+		index: UI(sites),
 	}
 
 	return s, nil
@@ -65,7 +62,7 @@ func (s *Service) Handler() (http.Handler, error) {
 	rt := mux.NewRouter()
 	root.Handle("/", rt)
 	s.bindRedirects(rt)
-	rt.Handle("/", s.index)
+	rt.Handle("/{tail:.*}", s.index)
 	rt.NotFoundHandler = http.HandlerFunc(s.notFound)
 	return root, nil
 }

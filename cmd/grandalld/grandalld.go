@@ -2,8 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
 
 	influxdb "github.com/influxdb/influxdb/client"
 )
@@ -19,7 +22,7 @@ func main() {
 	}
 	if conf.Metrics == "" {
 		conf.Metrics = "log"
-		conf.MetricsHost = "" // just to be tidy
+		conf.MetricsURL = "" // just to be tidy
 	}
 
 	var access func(name, bind, url string)
@@ -27,15 +30,9 @@ func main() {
 	case "log":
 		access = LogAccess
 	case "influxdb":
-		if conf.MetricsHost == "" {
-			log.Fatal("no influxdb host")
-		}
-		clientConf := &influxdb.ClientConfig{
-			Host: conf.MetricsHost,
-		}
-		client, err := influxdb.NewClient(clientConf)
+		client, err := InfluxDBClient(conf)
 		if err != nil {
-			log.Fatalf("influxdb: %v", err)
+			log.Fatal(err)
 		}
 		access = InfluxDBAccess(client)
 	default:
@@ -75,4 +72,37 @@ func InfluxDBAccess(c *influxdb.Client) func(name, bind, url string) {
 			log.Printf("influxdb: %v", err)
 		}
 	}
+}
+
+// InfluxDBClient configures a new influxdb.Client using c.MetricsURL.
+//	http://root:root@influxdb.example.com/mydb
+//	https://root:root@influxdb.example.com/mydb
+//	udp://root:root@influxdb.example.com/mydb
+func InfluxDBClient(c *Config) (*influxdb.Client, error) {
+	if c.Metrics != "influxdb" {
+		return nil, fmt.Errorf("metrics are not reported to influxdb")
+	}
+	if c.MetricsURL == "" {
+		return nil, fmt.Errorf("metrics url: blank")
+	}
+	u, err := url.Parse(c.MetricsURL)
+	if err != nil {
+		log.Fatalf("metrics url: %v", err)
+	}
+	if u.Scheme == "" {
+		return nil, fmt.Errorf("metrics url: missing scheme")
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return nil, fmt.Errorf("metrics url: invalid scheme")
+	}
+
+	conf := new(influxdb.ClientConfig)
+	conf.Host = u.Host
+	conf.Username = u.User.Username()
+	conf.Password, _ = u.User.Password()
+	conf.Database = strings.TrimPrefix(u.Path, "/")
+	conf.IsSecure = u.Scheme == "https"
+	conf.IsUDP = u.Scheme == "udp"
+
+	return influxdb.NewClient(conf)
 }

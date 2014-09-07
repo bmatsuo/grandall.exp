@@ -63,8 +63,8 @@ type Config struct {
 	// Metrics specifies the type of metrics to use (e.g. "influxdb", "log",
 	// etc), the default value is "log".
 	Metrics string `toml:"metrics"`
-	// MetricsHost is ignored for "log" metrics.
-	MetricsHost string `toml:"metrics_host"`
+	// MetricsURL is ignored for "log" metrics.
+	MetricsURL string `toml:"metrics_url"`
 }
 
 type Site struct {

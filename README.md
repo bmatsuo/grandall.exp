@@ -41,7 +41,7 @@ for help configuring the service.
 
 The `grandall` command line interface is an optional component that launches
 aliases from the command line.  For more information see the grandall
-[documentation](http://godoc.org/github.com/bmatsuo/grandall.exp/cmp/grandall).
+[documentation](http://godoc.org/github.com/bmatsuo/grandall.exp/cmd/grandall).
 The command line interface can be installed from a [release
 archive](http://github.com/bmatsuo/grandall.exp/releases/latest) with `go get`.
 

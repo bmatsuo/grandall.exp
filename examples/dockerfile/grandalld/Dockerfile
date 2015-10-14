@@ -6,10 +6,10 @@ MAINTAINER "Bryan Matsuo <bryan.matsuo@gmail.com>"
 RUN mkdir -p /opt/bin
 RUN apt-get update -q && apt-get install -qy wget
 RUN wget \
-    -O /tmp/grandall.exp0.1.1-linux-amd64.tar.gz \
-    https://github.com/bmatsuo/grandall.exp/releases/download/0.1.1/grandall.exp0.1.1-linux-amd64.tar.gz
-RUN tar -C /tmp -xvzf /tmp/grandall.exp0.1.1-linux-amd64.tar.gz
-RUN cp /tmp/grandall.exp0.1.1-linux-amd64/grandalld /opt/bin/grandalld
+    -O /tmp/grandall.exp0.2-linux-amd64.tar.gz \
+    https://github.com/bmatsuo/grandall.exp/releases/download/0.2/grandall.exp0.2-linux-amd64.tar.gz
+RUN tar -C /tmp -xvzf /tmp/grandall.exp0.2-linux-amd64.tar.gz
+RUN cp /tmp/grandall.exp0.2-linux-amd64/grandalld /opt/bin/grandalld
 
 RUN mkdir -p /etc/grandall
 COPY grandalld.conf /etc/grandall/grandalld.conf
